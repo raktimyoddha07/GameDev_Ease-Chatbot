@@ -13,7 +13,7 @@ function App() {
   const [suggestion, setSuggestion] = useState<ICodeSuggestion | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [editorLanguage, setEditorLanguage] = useState('typescript')
+  const [editorLanguage, setEditorLanguage] = useState('javascript')
   const [messages, setMessages] = useState<IChatMessage[]>([])
   const chatEndRef = useRef<HTMLDivElement>(null)
   
@@ -102,8 +102,8 @@ function App() {
             )}
             <Editor
               height="100%"
-              defaultLanguage={editorLanguage}
-              language={editorLanguage}
+              defaultLanguage="javascript"
+              language="javascript"
               value={code}
               onChange={(value) => setCode(value || '')}
               theme="vs-dark"
@@ -146,7 +146,7 @@ function App() {
                   <Box sx={{ mt: 2 }}>
                     <DiffEditor
                       height="200px"
-                      language={editorLanguage}
+                      language="javascript"
                       original={message.suggestion.original}
                       modified={message.suggestion.suggested}
                       theme="vs-dark"
@@ -187,7 +187,7 @@ function App() {
               multiline
               maxRows={4}
               variant="outlined"
-              placeholder="What changes would you like to make?"
+              placeholder="What changes would you like to make to your code?"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyPress={handleKeyPress}

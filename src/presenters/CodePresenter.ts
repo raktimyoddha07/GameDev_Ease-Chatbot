@@ -13,14 +13,12 @@ export class CodePresenter {
   private model: CodeModel;
   private chatModel: ChatModel;
   private view: ICodeView;
-  private messages: IChatMessage[];
+  private messages: IChatMessage[] = [];
 
   constructor(view: ICodeView) {
     this.model = new CodeModel();
     this.chatModel = new ChatModel();
     this.view = view;
-    this.messages = this.chatModel.loadChatHistory();
-    this.view.setMessages(this.messages);
   }
 
   async analyzeCode(code: string, prompt: string): Promise<void> {
@@ -39,13 +37,12 @@ export class CodePresenter {
       this.messages = this.chatModel.addMessage(this.messages, userMessage);
       this.view.setMessages(this.messages);
 
-      const detectedLanguage = this.model.detectLanguage(code);
-      this.view.setEditorLanguage(detectedLanguage);
+      // Set editor language to JavaScript for Phaser.js
+      this.view.setEditorLanguage('javascript');
 
       const request: ICodeAnalysisRequest = {
         code,
         prompt,
-        language: detectedLanguage,
       };
 
       const suggestion = await this.model.analyzeCode(request);
@@ -71,8 +68,8 @@ export class CodePresenter {
   }
 
   clearHistory(): void {
-    this.chatModel.clearHistory();
     this.messages = [];
     this.view.setMessages(this.messages);
+    this.view.setSuggestion(null);
   }
 } 

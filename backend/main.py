@@ -46,108 +46,176 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Game Development Contexts
-GAME_CONTEXTS = {
+# Phaser.js Development Contexts
+PHASER_CONTEXTS = {
     "performance": """
-    Focus on:
-    - Frame rate optimization
-    - Memory management
-    - Efficient data structures
-    - Batch processing
-    - Object pooling
-    - Spatial partitioning
-    - Asset loading and caching
+    Phaser.js Performance Optimization Focus:
+    1. Game Loop Optimization
+       - Fixed timestep implementation
+       - Delta time calculations
+       - Frame rate limiting
+       - VSync handling
+       - Game loop throttling
+    
+    2. Memory Management
+       - Object pooling for sprites and particles
+       - Texture atlas usage
+       - Asset preloading and caching
+       - Scene cleanup and disposal
+       - Memory leak prevention
+    
+    3. Rendering Optimization
+       - Sprite batching
+       - Render texture usage
+       - Canvas/WebGL context management
+       - Layer management
+       - Culling techniques
+    
+    4. Physics Optimization
+       - Arcade physics optimization
+       - Matter.js physics settings
+       - Collision group management
+       - Static body usage
+       - Physics world bounds
     """,
     
     "gameplay": """
-    Focus on:
-    - Input handling
-    - Game state management
-    - Entity component systems
-    - Collision detection
-    - Physics calculations
-    - AI behavior patterns
-    - Game loop structure
+    Phaser.js Gameplay Systems Focus:
+    1. Input Systems
+       - Keyboard input handling
+       - Touch/pointer input
+       - Gamepad support
+       - Input plugin usage
+       - Gesture recognition
+    
+    2. Scene Management
+       - Scene transitions
+       - Scene loading
+       - Scene lifecycle
+       - Scene communication
+       - Scene preloading
+    
+    3. Game State
+       - State machine implementation
+       - Save/Load systems
+       - Progress tracking
+       - Achievement systems
+       - Game flow control
+    
+    4. Physics and Collision
+       - Arcade physics setup
+       - Matter.js integration
+       - Collision detection
+       - Physics bodies
+       - Collision callbacks
     """,
     
     "architecture": """
-    Focus on:
-    - Design patterns (Observer, State, Command)
-    - Code modularity
-    - Event systems
-    - Scene management
-    - Resource management
-    - Save/Load systems
-    - Networking architecture
+    Phaser.js Architecture Focus:
+    1. Scene Organization
+       - Scene hierarchy
+       - Scene inheritance
+       - Scene composition
+       - Scene dependencies
+       - Scene loading order
+    
+    2. Plugin Development
+       - Custom plugin creation
+       - Plugin lifecycle
+       - Plugin configuration
+       - Plugin events
+       - Plugin dependencies
+    
+    3. Event System
+       - Event emitter usage
+       - Custom events
+       - Event bubbling
+       - Event cleanup
+       - Event prioritization
+    
+    4. Asset Management
+       - Asset loading pipeline
+       - Asset preloading
+       - Asset caching
+       - Asset versioning
+       - Asset cleanup
     """,
     
     "graphics": """
-    Focus on:
-    - Rendering optimization
-    - Shader implementation
-    - Particle systems
-    - Animation systems
-    - Texture management
-    - Camera systems
-    - Level of detail
+    Phaser.js Graphics Systems Focus:
+    1. Sprite Management
+       - Sprite creation
+       - Sprite animation
+       - Sprite groups
+       - Sprite pooling
+       - Sprite layering
+    
+    2. Particle Systems
+       - Particle emitter setup
+       - Particle effects
+       - Particle optimization
+       - Particle blending
+       - Particle physics
+    
+    3. Shader Implementation
+       - Custom shaders
+       - Post-processing
+       - Shader uniforms
+       - Shader compilation
+       - Shader optimization
+    
+    4. Camera Systems
+       - Camera follow
+       - Camera bounds
+       - Camera effects
+       - Multiple cameras
+       - Camera transitions
     """
 }
 
-# Language-specific best practices
-LANGUAGE_PRACTICES = {
-    "java": """
-    - Use efficient data structures (ArrayList for dynamic arrays)
-    - Implement proper garbage collection practices
-    - Use StringBuilder for string concatenation
-    - Consider thread safety in game loops
-    - Utilize Java collections framework efficiently
-    """,
-    
-    "javascript": """
-    - Use requestAnimationFrame for game loops
-    - Implement proper garbage collection practices
-    - Use TypedArrays for performance-critical operations
-    - Consider Web Workers for heavy computations
-    - Use proper event delegation
-    """,
-    
-    "typescript": """
-    - Leverage strict type checking
-    - Use interfaces for game entities
-    - Implement proper access modifiers
-    - Use enums for game states
-    - Consider decorators for component systems
-    """,
-    
-    "python": """
-    - Use Pygame or Arcade for 2D games
-    - Implement proper __slots__ for memory optimization
-    - Use NumPy for physics calculations
-    - Consider Cython for performance-critical parts
-    - Implement proper garbage collection
-    """,
-    
-    "csharp": """
-    - Use Unity's built-in optimization features
-    - Implement proper memory management
-    - Use structs for performance-critical components
-    - Consider job system for parallel processing
-    - Implement object pooling
-    """,
-    
-    "cpp": """
-    - Use smart pointers for memory management
-    - Implement proper RAII practices
-    - Use data-oriented design
-    - Consider SIMD operations
-    - Implement proper memory alignment
-    """
-}
+# Phaser.js Best Practices
+PHASER_BEST_PRACTICES = """
+Phaser.js Development Best Practices:
+
+1. Scene Management
+   - Use scene inheritance for common functionality
+   - Implement proper scene lifecycle methods
+   - Handle scene transitions smoothly
+   - Clean up resources in scene shutdown
+   - Use scene plugins for shared functionality
+
+2. Asset Loading
+   - Preload assets in loading scenes
+   - Use texture atlases for sprites
+   - Implement proper loading progress
+   - Handle loading errors gracefully
+   - Cache frequently used assets
+
+3. Performance
+   - Use object pooling for frequently created objects
+   - Implement proper culling for off-screen objects
+   - Optimize physics calculations
+   - Use render textures for complex effects
+   - Implement proper garbage collection
+
+4. Code Organization
+   - Use ES6 classes for game objects
+   - Implement proper inheritance
+   - Use composition over inheritance
+   - Follow SOLID principles
+   - Use TypeScript for better type safety
+
+5. Game Architecture
+   - Implement proper state management
+   - Use event system for communication
+   - Create reusable components
+   - Implement proper error handling
+   - Use dependency injection
+"""
 
 class CodeAnalysisRequest(BaseModel):
     code: str
     prompt: str
-    language: str
 
 class CodeSuggestion(BaseModel):
     original: str
@@ -166,429 +234,38 @@ def determine_context(prompt: str) -> str:
         return "graphics"
     return "performance"  # Default context
 
-def parse_gemini_response(response_text: str, language: str) -> tuple[str, str]:
-    logger.debug(f"Raw response from Gemini: {response_text}")
-    
-    # Look for code block with or without language specification
-    code_markers = [
-        (f"```{language}", "```"),  # With language
-        ("```", "```")  # Without language
-    ]
-    
-    suggested_code = ""
-    explanation = ""
-    
-    for start_marker, end_marker in code_markers:
-        try:
-            code_start = response_text.find(start_marker)
-            if code_start != -1:
-                code_start += len(start_marker)
-                code_end = response_text.find(end_marker, code_start)
-                if code_end != -1:
-                    suggested_code = response_text[code_start:code_end].strip()
-                    explanation_start = response_text.find("Explanation:", code_end)
-                    if explanation_start != -1:
-                        explanation = response_text[explanation_start + 12:].strip()
-                    break
-        except Exception as e:
-            logger.error(f"Error parsing response with marker {start_marker}: {str(e)}")
-            continue
-    
-    if not suggested_code or not explanation:
-        logger.error("Failed to parse Gemini response properly")
-        logger.debug(f"Found code: {bool(suggested_code)}, Found explanation: {bool(explanation)}")
-        raise ValueError("Could not parse response format correctly")
-    
-    return suggested_code, explanation
-
 @app.post("/analyze", response_model=CodeSuggestion)
 async def analyze_code(request: CodeAnalysisRequest):
     try:
-        logger.info(f"Received request for language: {request.language}")
+        logger.info("Received code analysis request")
         logger.debug(f"Code: {request.code}")
         logger.debug(f"Prompt: {request.prompt}")
 
-        # Comprehensive game development contexts
-        game_contexts = {
-            "performance": """
-            Performance Optimization Focus:
-            1. Game Loop Optimization
-               - Fixed timestep implementation
-               - Variable timestep handling
-               - Frame timing and synchronization
-               - Delta time calculations
-               - Frame rate limiting and VSync
-            
-            2. Memory Management
-               - Object pooling systems
-               - Resource caching
-               - Memory defragmentation
-               - Garbage collection optimization
-               - Asset streaming
-            
-            3. Rendering Optimization
-               - Batch rendering systems
-               - Culling techniques (frustum, occlusion)
-               - LOD (Level of Detail) systems
-               - Texture atlasing
-               - Shader optimization
-               - Draw call reduction
-            
-            4. Physics Optimization
-               - Broad phase collision detection
-               - Spatial partitioning (Quadtree, Octree)
-               - Physics engine optimization
-               - Collision response optimization
-               - Rigidbody management
-            """,
-
-            "gameplay": """
-            Gameplay Systems Focus:
-            1. Input Systems
-               - Input mapping and configuration
-               - Input buffering and prediction
-               - Gesture recognition
-               - Input state management
-               - Controller support
-            
-            2. Combat Systems
-               - Hit detection and hitboxes
-               - Damage calculation systems
-               - Combat state machines
-               - Combo systems
-               - Projectile management
-            
-            3. AI Systems
-               - Pathfinding (A*, Dijkstra)
-               - Behavior trees
-               - State machines for AI
-               - Decision making systems
-               - Group behavior coordination
-               - Navigation mesh usage
-            
-            4. Game Mechanics
-               - Power-up systems
-               - Inventory management
-               - Quest/Mission systems
-               - Achievement systems
-               - Progression systems
-               - Economy systems
-            """,
-
-            "architecture": """
-            Game Architecture Focus:
-            1. Core Systems
-               - Entity Component System (ECS)
-               - Event/Message systems
-               - Service locator pattern
-               - Dependency injection
-               - Scene graph management
-            
-            2. Data Management
-               - Save/Load systems
-               - Serialization
-               - Data persistence
-               - Configuration management
-               - Asset management
-            
-            3. Game State
-               - State machine implementation
-               - Scene management
-               - Level loading systems
-               - Checkpoint systems
-               - Game flow control
-            
-            4. Networking
-               - Client-server architecture
-               - State synchronization
-               - Network prediction
-               - Lag compensation
-               - Multiplayer session management
-            """,
-
-            "graphics": """
-            Graphics Systems Focus:
-            1. Rendering Pipeline
-               - Custom shaders
-               - Post-processing effects
-               - Particle systems
-               - Animation systems
-               - Camera systems
-            
-            2. Visual Effects
-               - Sprite management
-               - Special effects systems
-               - Weather systems
-               - Lighting systems
-               - Shadow techniques
-            
-            3. UI/UX
-               - HUD systems
-               - Menu systems
-               - UI animation
-               - Screen space effects
-               - UI state management
-            
-            4. Asset Pipeline
-               - Texture management
-               - Model loading
-               - Animation data
-               - Asset bundling
-               - Resource streaming
-            """,
-
-            "audio": """
-            Audio Systems Focus:
-            1. Sound Engine
-               - Audio source management
-               - 3D positional audio
-               - Sound mixing
-               - Audio effects processing
-               - Stream management
-            
-            2. Music Systems
-               - Dynamic music system
-               - Music state management
-               - Transition systems
-               - Adaptive music
-               - Playlist management
-            
-            3. Sound Effects
-               - SFX pooling
-               - Priority system
-               - Distance-based attenuation
-               - Environmental effects
-               - Real-time effects
-            """,
-
-            "tools": """
-            Game Development Tools Focus:
-            1. Debug Systems
-               - Performance profiling
-               - Debug visualization
-               - Logging systems
-               - State inspection
-               - Replay systems
-            
-            2. Level Tools
-               - Level editor integration
-               - Tile system management
-               - Procedural generation
-               - Environment systems
-               - Spawn point management
-            
-            3. Testing
-               - Unit testing framework
-               - Integration testing
-               - Automated testing
-               - Replay testing
-               - Performance testing
-            """
-        }
-
-        # Language-specific game development patterns
-        language_patterns = {
-            "java": """
-            Java Game Development Best Practices:
-            1. Game Engine Integration
-               - LibGDX optimization patterns
-               - LWJGL best practices
-               - JavaFX game loop patterns
-               - JMonkey engine patterns
-               - Custom game loop implementation
-            
-            2. Performance Patterns
-               - Efficient collection usage (ArrayDeque for game objects)
-               - Object pooling implementation
-               - Garbage collection optimization
-               - Thread management for game loops
-               - Double/Triple buffering patterns
-            
-            3. Architecture Patterns
-               - Entity Component System (ECS)
-               - Game state management
-               - Scene graph implementation
-               - Event handling system
-               - Asset management patterns
-               - Resource loading optimization
-            
-            4. Game Systems
-               - Collision detection optimization
-               - Physics engine integration
-               - Sprite batch rendering
-               - Animation system patterns
-               - Input handling system
-               - Sound system management
-            """,
-            
-            "python": """
-            Python Game Development Best Practices:
-            1. Pygame Optimization
-               - Surface caching
-               - Sprite group optimization
-               - Rect collision optimization
-               - Event handling patterns
-               - Sound management
-            
-            2. Performance Patterns
-               - NumPy for physics calculations
-               - Cython for critical paths
-               - Proper surface locking
-               - Efficient sprite management
-               - Resource loading optimization
-            
-            3. Architecture
-               - Scene management system
-               - State machine implementation
-               - Event system patterns
-               - Component-based design
-               - Resource management
-            """,
-
-            "javascript": """
-            JavaScript Game Development Best Practices:
-            1. Canvas Optimization
-               - RequestAnimationFrame usage
-               - Double buffering
-               - Canvas state management
-               - Sprite batching
-               - Layer management
-            
-            2. WebGL Integration
-               - Shader management
-               - Buffer optimization
-               - Texture handling
-               - WebGL state caching
-               - Render queue management
-            
-            3. Browser Optimization
-               - Asset preloading
-               - Web Worker utilization
-               - Memory management
-               - Event delegation
-               - Resource caching
-            """,
-
-            "typescript": """
-            TypeScript Game Development Best Practices:
-            1. Type Safety
-               - Game state interfaces
-               - Entity type definitions
-               - Component type safety
-               - Event type definitions
-               - Asset type management
-            
-            2. Architecture Patterns
-               - Dependency injection
-               - Service decorators
-               - Module organization
-               - Generic constraints
-               - Abstract factories
-            
-            3. Engine Integration
-               - Engine type definitions
-               - Plugin type safety
-               - Framework integration
-               - Module augmentation
-               - Declaration merging
-            """,
-
-            "cpp": """
-            C++ Game Development Best Practices:
-            1. Memory Management
-               - Custom allocators
-               - Memory pools
-               - RAII patterns
-               - Smart pointer usage
-               - Memory alignment
-            
-            2. Performance
-               - SIMD optimization
-               - Cache coherency
-               - Data-oriented design
-               - Template metaprogramming
-               - Compiler optimization
-            
-            3. Engine Systems
-               - Component systems
-               - Memory managers
-               - Resource handling
-               - Threading patterns
-               - Platform abstraction
-            """,
-
-            "csharp": """
-            C# Game Development Best Practices:
-            1. Unity Integration
-               - MonoBehaviour patterns
-               - Coroutine optimization
-               - Scriptable Objects
-               - Custom editors
-               - Asset management
-            
-            2. Performance
-               - Struct optimization
-               - Job system usage
-               - Burst compilation
-               - Memory management
-               - Unity DOTS
-            
-            3. Architecture
-               - Component patterns
-               - Event systems
-               - Service locator
-               - Object pooling
-               - Scene management
-            """
-        }
-
-        # Determine the most relevant context based on the code and prompt
-        def determine_context(code: str, prompt: str) -> str:
-            prompt_lower = prompt.lower()
-            code_lower = code.lower()
-            
-            # Check for context clues in both code and prompt
-            if any(term in prompt_lower or term in code_lower for term in ['fps', 'performance', 'optimize', 'speed', 'memory', 'lag']):
-                return 'performance'
-            elif any(term in prompt_lower or term in code_lower for term in ['input', 'player', 'enemy', 'combat', 'ai', 'npc']):
-                return 'gameplay'
-            elif any(term in prompt_lower or term in code_lower for term in ['component', 'system', 'manager', 'service', 'state']):
-                return 'architecture'
-            elif any(term in prompt_lower or term in code_lower for term in ['render', 'draw', 'sprite', 'shader', 'camera']):
-                return 'graphics'
-            elif any(term in prompt_lower or term in code_lower for term in ['sound', 'audio', 'music', 'play']):
-                return 'audio'
-            elif any(term in prompt_lower or term in code_lower for term in ['debug', 'test', 'tool', 'editor']):
-                return 'tools'
-            
-            return 'performance'  # Default to performance context
-
         # Determine the most relevant context
-        context = determine_context(request.code, request.prompt)
+        context = determine_context(request.prompt)
         logger.info(f"Determined context: {context}")
 
-        # Enhanced prompt for game development
-        prompt = f"""As an expert game developer specializing in {context}, analyze and improve this {request.language} code.
+        # Enhanced prompt for Phaser.js development
+        prompt = f"""As an expert Phaser.js developer specializing in {context}, analyze and improve this code.
         
-        {game_contexts[context]}
+        {PHASER_CONTEXTS[context]}
 
-        Language-specific game development considerations:
-        {language_patterns.get(request.language.lower(), "Apply general game development best practices.")}
+        {PHASER_BEST_PRACTICES}
 
         Original code:
-        ```{request.language}
+        ```javascript
         {request.code}
         ```
 
         User's specific request: {request.prompt}
 
         Provide your response in this exact format:
-        ```{request.language}
-        [Your improved game-optimized code here]
+        ```javascript
+        [Your improved Phaser.js optimized code here]
         ```
 
         Explanation:
-        [Provide a detailed explanation of the improvements made, focusing on game development benefits and performance implications]
+        [Provide a detailed explanation of the improvements made, focusing on Phaser.js best practices and performance implications]
         """
 
         logger.debug("Sending request to Gemini API...")
@@ -607,10 +284,7 @@ async def analyze_code(request: CodeAnalysisRequest):
         # Parse response
         try:
             response_text = response.text
-            code_start = response_text.find("```") + 3
-            if "```" + request.language in response_text:
-                code_start = response_text.find("```" + request.language) + len(request.language) + 3
-            
+            code_start = response_text.find("```javascript") + 12
             code_end = response_text.find("```", code_start)
             explanation_start = response_text.find("Explanation:", code_end)
 

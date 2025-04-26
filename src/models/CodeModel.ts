@@ -7,7 +7,6 @@ export interface ICodeSuggestion {
 export interface ICodeAnalysisRequest {
   code: string;
   prompt: string;
-  language: string;
 }
 
 export class CodeModel {
