@@ -22,7 +22,7 @@
 
 - And then Download Dependences there
     - For MacOS/Linux
-  
+  <br/>
     ```bash
         python -m venv venv
     ``` 
@@ -30,7 +30,8 @@
        source venv/bin/activate
     ``` 
     - For Windows
-  
+    <br/>
+
     ```bash
         python -m venv venv
     ```
