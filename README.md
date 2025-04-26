@@ -22,22 +22,20 @@
 
 - And then Download Dependences there
     - For MacOS/Linux
-  <br/>
-    ```bash
-        python -m venv venv
-    ``` 
-    ```bash
-       source venv/bin/activate
-    ``` 
+      
+        ```bash
+            python -m venv venv
+        ``` 
+        ```bash
+           source venv/bin/activate
+        ``` 
     - For Windows
-    <br/>
-
-    ```bash
-        python -m venv venv
-    ```
-    ```bash
-       venv\Scripts\activate
-    ``` 
+        ```bash
+            python -m venv venv
+        ```
+        ```bash
+           venv\Scripts\activate
+        ``` 
     
 - Then in backend folder
     ```bash
